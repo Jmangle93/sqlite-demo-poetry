@@ -1,4 +1,5 @@
 import csv
+from dataclasses import dataclass
 import datetime
 import requests
 import sqlite3
@@ -12,6 +13,26 @@ CREATE TABLE IF NOT EXISTS investments (
     date TIMESTAMP
 );
 """
+
+@dataclass
+class Investment:
+    coin_id: str
+    vs_currency: str
+    amount: float
+    sell: bool
+    date: datetime.datetime
+
+    def compute_value(self) -> float:
+        return self.amount * get_coin_price(self.coin_id, self.vs_currency)
+
+def investment_row_factory(_, row):
+    return Investment(
+        coin_id=row[0],
+        vs_currency=row[1],
+        amount=row[2],
+        sell=bool(row[3]),
+        date=datetime.datetime.fromisoformat(row[4])
+    )
 
 def get_coin_price(coin_id, vs_currency):
     url = f'https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies={vs_currency}'
@@ -35,15 +56,15 @@ def add_investment(coin_id, vs_currency, amount, sell):
 
 def get_investment_value(coin_id, vs_currency):
     price = get_coin_price(coin_id, vs_currency)
-    sql = """SELECT amount
+    sql = """SELECT *
     FROM investments
     WHERE coin_id = ? 
     AND vs_currency = ?
     AND sell=?;"""
     buy_result = cursor.execute(sql, (coin_id, vs_currency, False)).fetchall()
     sell_result = cursor.execute(sql, (coin_id, vs_currency, True)).fetchall()
-    buy_amount = sum([row[0] for row in buy_result])
-    sell_amount = sum([row[0] for row in sell_result])
+    buy_amount = sum([row.amount for row in buy_result])
+    sell_amount = sum([row.amount for row in sell_result])
 
     total_amount = buy_amount - sell_amount
     total_value = total_amount * price
@@ -69,12 +90,13 @@ def export_investments(csv_file=f'data/exported_investments_{datetime.datetime.n
         print(f"Exported {len(rows)} investments to {csv_file}.")
 
 database = sqlite3.connect('portfolio.db')
+database.row_factory = investment_row_factory
 cursor = database.cursor()
 cursor.execute(CREATE_INVESTMENTS_SQL)
 
 # Example usage
 # get_coin_price('bitcoin', 'usd')
 # add_investment('bitcoin', 'usd', 0.01, False)
-# get_investment_value('bitcoin', 'usd')
+get_investment_value('bitcoin', 'usd')
 # import_investments('data/demo-data.csv')
-export_investments()
+# export_investments()
