@@ -1,3 +1,4 @@
+import csv
 import datetime
 import requests
 import sqlite3
@@ -48,6 +49,25 @@ def get_investment_value(coin_id, vs_currency):
     total_value = total_amount * price
     print(f"You own a total of {total_amount} {coin_id} worth ${total_value} at the current price of ${price} in {vs_currency.upper()}.")
 
+def import_investments(csv_file):
+    with open(csv_file, 'r') as file:
+        rdr = csv.reader(file, delimiter=',')
+        rows = list(rdr)
+        sql = "INSERT INTO investments VALUES (?, ?, ?, ?, ?);"
+        cursor.executemany(sql, rows)
+        database.commit()
+
+        print(f"Imported {len(rows)} investments from {csv_file}.")
+
+def export_investments(csv_file=f'data/exported_investments_{datetime.datetime.now().strftime("%m-%d-%Y_%H-%M-%S")}.csv'):
+    sql = "SELECT * FROM investments;"
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    with open(csv_file, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(rows)
+        print(f"Exported {len(rows)} investments to {csv_file}.")
+
 database = sqlite3.connect('portfolio.db')
 cursor = database.cursor()
 cursor.execute(CREATE_INVESTMENTS_SQL)
@@ -56,3 +76,5 @@ cursor.execute(CREATE_INVESTMENTS_SQL)
 # get_coin_price('bitcoin', 'usd')
 # add_investment('bitcoin', 'usd', 0.01, False)
 # get_investment_value('bitcoin', 'usd')
+# import_investments('data/demo-data.csv')
+export_investments()
