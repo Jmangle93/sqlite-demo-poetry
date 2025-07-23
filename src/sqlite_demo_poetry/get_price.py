@@ -59,6 +59,15 @@ def import_investments(csv_file):
 
         print(f"Imported {len(rows)} investments from {csv_file}.")
 
+def export_investments(csv_file=f'data/exported_investments_{datetime.datetime.now().strftime("%m-%d-%Y_%H-%M-%S")}.csv'):
+    sql = "SELECT * FROM investments;"
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    with open(csv_file, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(rows)
+        print(f"Exported {len(rows)} investments to {csv_file}.")
+
 database = sqlite3.connect('portfolio.db')
 cursor = database.cursor()
 cursor.execute(CREATE_INVESTMENTS_SQL)
@@ -67,4 +76,5 @@ cursor.execute(CREATE_INVESTMENTS_SQL)
 # get_coin_price('bitcoin', 'usd')
 # add_investment('bitcoin', 'usd', 0.01, False)
 # get_investment_value('bitcoin', 'usd')
-import_investments('data/demo-data.csv')
+# import_investments('data/demo-data.csv')
+export_investments()
