@@ -3,7 +3,7 @@ This project was made for two primary learning objectives in line with parts of 
 - SQLite with Python, simple database management
 - Poetry for Python dependency management and packaging
 
-It's a simple set of functions that fetch cryptocurrency prices and allow you to add investments from/to a SQLite database.
+It's a simple set of functions that fetch cryptocurrency prices and allows you to add investments from/to a SQLite database.
 SQLite, because I'm new to SQL/database management in general and it doesn't require a server. Poetry is overkill for such a small project, but it seems great for robust application development and I want to learn it.
 
 ## Supporting Docs and Tools
@@ -18,5 +18,5 @@ SQLite, because I'm new to SQL/database management in general and it doesn't req
     - [VS Code extension for Python](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
 
 ## Source Education
-[Working with Databases in Python3 by Douglas Starnes on Pluralsight](https://app.pluralsight.com/library/courses/python-3-working-databases)
-[Development Environments and Package Management in Python3 by Reindert-Jan Ekker on Pluralsight](https://app.pluralsight.com/library/courses/python-3-development-environments-package-management)
+- [Working with Databases in Python3 by Douglas Starnes on Pluralsight](https://app.pluralsight.com/library/courses/python-3-working-databases)
+- [Development Environments and Package Management in Python3 by Reindert-Jan Ekker on Pluralsight](https://app.pluralsight.com/library/courses/python-3-development-environments-package-management)
